@@ -66,6 +66,9 @@ func (a AL2) UserData(kubeletConfig *v1alpha5.KubeletConfiguration, taints []cor
 // instanceTypes passed in since the AL2 EKS Optimized AMI does not support GPUs w/ containerd.
 // this should be removed once the EKS Optimized AMI supports GPUs through containerd
 func (a AL2) containerRuntime(instanceTypes []cloudprovider.InstanceType) string {
+	// Force use of docker runtime
+	return "dockerd"
+
 	instanceResources := instanceTypes[0].Resources()
 	if resources.IsZero(instanceResources[v1alpha1.ResourceNVIDIAGPU]) &&
 		resources.IsZero(instanceResources[v1alpha1.ResourceAMDGPU]) &&
