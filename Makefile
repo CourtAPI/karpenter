@@ -62,6 +62,11 @@ apply: ## Deploy the controller from the current state of your git repository in
 		--set controller.image=$(shell $(WITH_GOFLAGS) ko build -B github.com/aws/karpenter/cmd/controller) \
 		--set webhook.image=$(shell $(WITH_GOFLAGS) ko build -B github.com/aws/karpenter/cmd/webhook)
 
+publish:
+	@aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $(KO_DOCKER_REPO)
+	$(WITH_GOFLAGS) ko build -B github.com/aws/karpenter/cmd/controller
+	$(WITH_GOFLAGS) ko build -B github.com/aws/karpenter/cmd/webhook
+
 install:  ## Deploy the latest released version into your ~/.kube/config cluster
 	@echo Upgrading to $(shell grep version charts/karpenter/Chart.yaml)
 	helm upgrade --install karpenter charts/karpenter --namespace karpenter \
